@@ -5,8 +5,13 @@ Paper addon reporting custom block allocations for players and the console:
 - `/nexoutils noteblocks` - note block slots (`nexoutils.command.noteblocks`).
 - `/nexoutils chorusblocks` - chorus block slots (`nexoutils.command.chorusblocks`).
 - `/nexoutils stringblocks` - string/tripwire block slots (`nexoutils.command.stringblocks`).
+- `/nexoutils allblocks` - all three reports together (`nexoutils.command.allblocks`).
 
-All three permissions default to operators. Each report requires its own permission.
+All four permissions default to operators. Each command requires its own permission.
+The `allblocks` permission grants the combined report without requiring the three
+individual permissions; it does not grant access to their separate commands.
+The combined report continues if a mechanic is disabled, not ready, or fails to
+load, showing a status/error message for that type alongside the other reports.
 Targets Paper 26.3 with backward compatibility down to Paper 1.21.10.
 Requires Nexo 1.30; compiled against the Nexo API artifact `1.30.2` and the Paper 1.21.10 API with
 Java 21 bytecode. Run Paper 1.21.10 on Java 21 or Paper 26.3 on Java 25,
@@ -111,12 +116,16 @@ Configuration follows Nexo's
 
 Server smoke checks:
 
-- Run all three commands in console and in-game; compare with registered variations.
+- Run the three individual commands and `allblocks` in console and in-game;
+  compare the counts with registered variations and each other.
 - Reload Nexo after adding/removing a block; run again to check the updated count.
 - Check a directional block consumes its registered variant slots.
 - Check an ordinary player cannot run each report until granted its permission,
   and granting one report does not unlock the others.
 - Check chorus/string reports gracefully handle disabled mechanics.
+- Grant only `nexoutils.command.allblocks`; verify the combined report works and
+  the individual reports remain permission-gated. Disable one mechanic and
+  check the combined command still reports the other two types.
 - With the module enabled, test all four directional modes for both types with
   the rebuilt pack, including explicit models and variation assignments.
 - Check cancelled/protected placements consume no items and leave no blocks.

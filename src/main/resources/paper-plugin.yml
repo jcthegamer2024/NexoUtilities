@@ -10,6 +10,9 @@ dependencies:
       required: true
       join-classpath: true
 permissions:
+  nexoutils.command.allblocks:
+    description: View all three Nexo custom block allocation reports together.
+    default: op
   nexoutils.command.noteblocks:
     description: View Nexo note block slot usage.
     default: op
