@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.sylvarion"
-version = "1.0"
+version = "1.1"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,7 @@ dependencies {
     testImplementation("net.kyori:adventure-api:4.20.0")
     testImplementation("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.mockito:mockito-core:5.20.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

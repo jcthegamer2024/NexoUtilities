@@ -29,7 +29,7 @@ Used segments are green below 75%, yellow from 75%, and red from 90%; free
 segments are dark grey. Tab completion suggests the block types the sender has
 permission to view.
 
-Build with `./gradlew build`, then copy `build/libs/NexoUtilities-1.0.jar`
+Build with `./gradlew build`, then copy `build/libs/NexoUtilities-1.1.jar`
 into the server's `plugins` folder alongside Nexo and restart. This uses
 `paper-plugin.yml` with a required Nexo dependency and Paper lifecycle command
 registration.
@@ -88,9 +88,13 @@ renumbered by editing `<direction>_variation`.
 
 The module preserves parent drop rules and returns the parent item through
 pick-block. It respects placement cancellation and leaves native note block
-directional handling to Nexo. Tall, stackable, and random-placement string
-blocks cannot currently be combined with this module. Automatic orientation
-applies to player placement; API/WorldEdit placement is not automatically rotated.
+directional handling to Nexo. Pick-block also resolves existing `_block` references
+to the base directional item. Creative mode can create that item; survival only
+selects or moves an existing base stack. A variant shared by multiple bases has
+no unique parent and keeps Nexo's normal pick-block behavior. Tall, stackable,
+and random-placement string blocks cannot currently be combined with this module.
+Automatic orientation applies to player placement; API/WorldEdit placement is
+not automatically rotated.
 Rotation is applied on the following server tick, after Nexo finishes placement.
 Cancelled placements, changed blocks, unloaded chunks and pending placements
 invalidated by a reload are left alone. A successful item reload logs the number
@@ -117,6 +121,9 @@ Server smoke checks:
   the rebuilt pack, including explicit models and variation assignments.
 - Check cancelled/protected placements consume no items and leave no blocks.
 - Check survival drops and creative pick-block return the parent item.
+- Check pick-block on existing `_block` references returns the base directional
+  item, including hidden wall-lamp variants. In survival, test with and without
+  the base item in the hotbar/storage; picking must never create a new stack.
 - Restart and reload Nexo; verify placed orientations and variation IDs persist.
 - Disable the module; check old blocks retain their models and ordinary placement
   resumes. Test full registries and invalid configs log a useful error.

@@ -10,6 +10,7 @@ import com.nexomc.nexo.mechanics.custom_block.chorusblock.ChorusBlockFactory;
 import com.nexomc.nexo.mechanics.custom_block.chorusblock.ChorusBlockMechanic;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanicFactory;
+import io.papermc.paper.event.player.PlayerPickBlockEvent;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,6 +45,7 @@ final class DirectionalBlocks implements Listener {
     private final Path file;
     private final YamlConfiguration saved = new YamlConfiguration();
     private volatile Map<String, Family> families = Map.of();
+    private volatile DirectionalParents pickParents = new DirectionalParents(Map.of());
     private final Map<UUID, Placement> placements = new HashMap<>();
 
     DirectionalBlocks(JavaPlugin plugin) {
@@ -69,6 +71,7 @@ final class DirectionalBlocks implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public synchronized void onItemsLoaded(NexoItemsLoadedEvent event) {
         families = Map.of();
+        pickParents = new DirectionalParents(Map.of());
         try {
             if (enabled) refresh();
         } catch (RuntimeException | LinkageError exception) {
@@ -132,6 +135,9 @@ final class DirectionalBlocks implements Listener {
             }
         }
         families = Map.copyOf(active);
+        Map<String, java.util.Collection<String>> references = new HashMap<>();
+        active.forEach((parent, family) -> references.put(parent, family.directions().values()));
+        pickParents = new DirectionalParents(references);
         plugin.getLogger().info("Prepared " + active.size() + " directional chorus/string block definitions.");
     }
 
@@ -258,6 +264,16 @@ final class DirectionalBlocks implements Listener {
         } catch (IOException exception) {
             throw new IllegalStateException("Could not persist directional allocation identities to " + file, exception);
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPickBlock(PlayerPickBlockEvent event) {
+        if (!enabled) return;
+        var mechanic = NexoBlocks.customBlockMechanic(event.getBlock());
+        if (mechanic == null) return;
+        String parent = pickParents.parent(mechanic.getItemID());
+        if (parent == null) return;
+        DirectionalPickBlock.pick(event, parent, NexoItems::idFromItem, () -> NexoItems.createItem(parent));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
