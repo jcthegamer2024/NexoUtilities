@@ -1,0 +1,15 @@
+name: NexoUtilities
+version: '${version}'
+main: org.sylvarion.nexoutilities.NexoUtilities
+api-version: '1.21.10'
+description: Reports live Nexo custom block allocation usage.
+dependencies:
+  server:
+    Nexo:
+      load: BEFORE
+      required: true
+      join-classpath: true
+permissions:
+  nexoutils.command.noteblocks:
+    description: View Nexo note block slot usage.
+    default: op
