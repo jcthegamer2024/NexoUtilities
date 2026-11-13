@@ -1,0 +1,5 @@
+# Restart the server after changing module toggles.
+modules:
+  directional-blocks:
+    # Adds LOG, BARREL, FURNACE and DROPPER placement to chorus/string blocks.
+    enabled: false

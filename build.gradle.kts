@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.sylvarion"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -16,8 +16,10 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
     compileOnly("com.nexomc:nexo:1.30.2") { isTransitive = false }
     compileOnly("it.unimi.dsi:fastutil:8.5.15")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("net.kyori:adventure-api:4.20.0")
+    testImplementation("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

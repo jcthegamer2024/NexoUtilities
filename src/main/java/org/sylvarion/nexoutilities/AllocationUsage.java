@@ -8,6 +8,18 @@ final class AllocationUsage {
 
     private AllocationUsage() {}
 
+    static int count(java.util.stream.IntStream variations, int first, int last) {
+        capacity(first, last);
+        return (int) variations.filter(value -> value >= Math.max(1, first) && value <= last)
+                .distinct().count();
+    }
+
+    static int capacity(int first, int last) {
+        int capacity = Math.toIntExact((long) last - Math.max(1, first) + 1);
+        if (capacity <= 0) throw new IllegalArgumentException("Invalid variation range: " + first + ".." + last);
+        return capacity;
+    }
+
     static Component bar(int used, int capacity) {
         int filled = filledSegments(used, capacity);
         double ratio = (double) used / capacity;

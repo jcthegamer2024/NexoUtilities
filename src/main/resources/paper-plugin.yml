@@ -13,3 +13,9 @@ permissions:
   nexoutils.command.noteblocks:
     description: View Nexo note block slot usage.
     default: op
+  nexoutils.command.chorusblocks:
+    description: View Nexo chorus block slot usage.
+    default: op
+  nexoutils.command.stringblocks:
+    description: View Nexo string block slot usage.
+    default: op
