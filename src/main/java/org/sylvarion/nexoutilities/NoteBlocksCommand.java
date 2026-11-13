@@ -1,18 +1,21 @@
 package org.sylvarion.nexoutilities;
 
 import com.nexomc.nexo.mechanics.custom_block.noteblock.NoteBlockMechanicFactory;
+import com.nexomc.nexo.mechanics.MechanicsManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
+@NullMarked
 final class NoteBlocksCommand implements BasicCommand {
     private static final String PERMISSION = "nexoutils.command.noteblocks";
     private final JavaPlugin plugin;
@@ -39,14 +42,14 @@ final class NoteBlocksCommand implements BasicCommand {
         }
         try {
             // Fetch the factory on every invocation: Nexo replaces it during reloads.
-            var factory = NoteBlockMechanicFactory.Companion.instance();
-            if (factory == null) {
+            var mechanicFactory = MechanicsManager.INSTANCE.mechanicFactory("noteblock");
+            if (!(mechanicFactory instanceof NoteBlockMechanicFactory factory)) {
                 sender.sendMessage(Component.text("Nexo note block mechanics are disabled or not ready yet.", NamedTextColor.YELLOW));
                 return;
             }
             int capacity = NoteBlockMechanicFactory.Companion.getMAX_BLOCK_VARIATION();
             // Registry keys are unique variations, including generated directional variants.
-            int used = (int) factory.getBLOCK_PER_VARIATION().keySet().stream()
+            int used = (int) factory.getBLOCK_PER_VARIATION().keySet().intStream()
                     .filter(variation -> variation >= 1 && variation <= capacity).count();
             sender.sendMessage(Component.text("Nexo note block slots", NamedTextColor.GOLD));
             sender.sendMessage(AllocationUsage.bar(used, capacity));
