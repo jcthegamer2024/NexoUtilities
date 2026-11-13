@@ -2,9 +2,9 @@
 
 Paper addon reporting custom block allocations for players and the console:
 
-- `/nexoutils noteblocks` — note block slots (`nexoutils.command.noteblocks`).
-- `/nexoutils chorusblocks` — chorus block slots (`nexoutils.command.chorusblocks`).
-- `/nexoutils stringblocks` — string/tripwire block slots (`nexoutils.command.stringblocks`).
+- `/nexoutils noteblocks` - note block slots (`nexoutils.command.noteblocks`).
+- `/nexoutils chorusblocks` - chorus block slots (`nexoutils.command.chorusblocks`).
+- `/nexoutils stringblocks` - string/tripwire block slots (`nexoutils.command.stringblocks`).
 
 All three permissions default to operators. Each report requires its own permission.
 Targets Paper 26.3 with backward compatibility down to Paper 1.21.10.
