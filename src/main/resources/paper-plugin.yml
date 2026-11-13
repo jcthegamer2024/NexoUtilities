@@ -2,7 +2,7 @@ name: NexoUtilities
 version: '${version}'
 main: org.sylvarion.nexoutilities.NexoUtilities
 api-version: '1.21.10'
-description: Reports live Nexo custom block allocation usage.
+description: Reports live Nexo custom block allocation usage, with an optional module to add nexo's directional mechanic to STRINGBLOCK and CHORUSBLOCK types.
 dependencies:
   server:
     Nexo:
