@@ -1,9 +1,10 @@
 plugins {
     id("java")
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 group = "org.sylvarion"
-version = "1.1"
+version = "1.2"
 
 repositories {
     mavenCentral()
@@ -17,6 +18,7 @@ dependencies {
     compileOnly("com.nexomc:nexo:1.30.2") { isTransitive = false }
     compileOnly("it.unimi.dsi:fastutil:8.5.15")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
+    implementation("org.bstats:bstats-bukkit:3.2.1")
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("net.kyori:adventure-api:4.20.0")
     testImplementation("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
@@ -44,4 +46,17 @@ tasks.processResources {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.jar {
+    archiveClassifier.set("plain")
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+    relocate("org.bstats", "org.sylvarion.nexoutilities.lib.bstats")
+}
+
+tasks.assemble {
+    dependsOn(tasks.shadowJar)
 }
