@@ -1,141 +1,35 @@
-# NexoUtilities
+# **NexoUtilities**
+NexoUtilities is an unofficial Nexo Addon that adds two features as of right now, but open to suggestions! Here are the current features:
 
-Paper addon reporting custom block allocations for players and the console:
+- Directional CustomBlock mechanic for STRINGBLOCK and CHORUSBLOCK types, with identical config syntax as the regular NOTEBLOCK nexo directional configurations. 
+  Reads the allocations for all types of custom blocks currently in Nexo.![Nexo CustomBlock Utilisation ](https://cdn.modrinth.com/data/cached_images/28b119cb52e1548238c89dea57747fe1fffe7227.png)
+- A set of commands to view the current live usage of the Nexo customBlock types.
 
-- `/nexoutils noteblocks` - note block slots (`nexoutils.command.noteblocks`).
-- `/nexoutils chorusblocks` - chorus block slots (`nexoutils.command.chorusblocks`).
-- `/nexoutils stringblocks` - string/tripwire block slots (`nexoutils.command.stringblocks`).
-- `/nexoutils allblocks` - all three reports together (`nexoutils.command.allblocks`).
+## Directional CustomBlock for other block types
+This is an optional module toggleable in _config.yml_ which adds directional placement to CHORUSBLOCK and STRINGBLOCK customBlock types. Uses the familar Nexo directional configuration. Supports LOG, BARREL, FURNACE, and DROPPER modes, with automatic model rotation or existing directional variants. Refer to Nexo's Directional Mechanic documentation for how to lay out the config.
 
-All four permissions default to operators. Each command requires its own permission.
-The `allblocks` permission grants the combined report without requiring the three
-individual permissions; it does not grant access to their separate commands.
-The combined report continues if a mechanic is disabled, not ready, or fails to
-load, showing a status/error message for that type alongside the other reports.
-Targets Paper 26.3 with backward compatibility down to Paper 1.21.10.
-Requires Nexo 1.30; compiled against the Nexo API artifact `1.30.2` and the Paper 1.21.10 API with
-Java 21 bytecode. Run Paper 1.21.10 on Java 21 or Paper 26.3 on Java 25,
-with a Nexo release compatible with your server. The same addon jar is used
-for both versions. Live server compatibility still needs smoke testing.
+## CustomBlock Allocation Checker
+set of commands that reads allocation data directly from Nexo's live custom block registries, showing how many NOTEBLOCK, CHORUSBLOCK, and STRINGBLOCK variations are in use, alongside Nexo's supported maximum amount for each of the variants. The count of this data refreshes whenever you run the command again. This data includes the registered directional variants within the count. It counts allocated custom block states, rather than the blocks placed in the world. 
 
-The command reads Nexo's live `BLOCK_PER_VARIATION` registry and
-`MAX_BLOCK_VARIATION` on each invocation. It counts distinct allocated variations,
-including generated directional variants, rather than item definitions or placed
-blocks. Variation zero is excluded because Nexo reserves it. The denominator is
-Nexo's actual supported custom variation limit, rather than a hardcoded 1,000.
-For chorus and string blocks, capacity comes from the live API's supported range;
-only distinct registry keys within that range count, excluding reserved zero.
-Disabled or not-yet-ready mechanics produce a concise status message.
-External resource packs overriding states without registering them with Nexo are
-outside this report.
-
-Output includes a 40-segment bar, exact used/total/free counts, and a percentage.
-Used segments are green below 75%, yellow from 75%, and red from 90%; free
-segments are dark grey. Tab completion suggests the block types the sender has
-permission to view.
-
-Build with `./gradlew build`, then copy `build/libs/NexoUtilities-1.1.jar`
-into the server's `plugins` folder alongside Nexo and restart. This uses
-`paper-plugin.yml` with a required Nexo dependency and Paper lifecycle command
-registration.
-
-## Optional directional chorus/string blocks
-
-Enable the module in `plugins/NexoUtilities/config.yml`:
-
-```yaml
-modules:
-  directional-blocks:
-    enabled: true
+### Commands
 ```
-
-Restart the server after changing this toggle, then run `/nexo reload all` to
-load the item configurations and rebuild the resource pack. Players must use
-the rebuilt pack. The module defaults to disabled.
-
-Use the same `directional` section as Nexo note blocks, inside your normal
-Nexo chorus/string item definition. For example:
-
-```yaml
-custom_chorus_log:
-  material: PAPER
-  Pack:
-    model: example:block/custom_log
-  Mechanics:
-    custom_block:
-      type: CHORUSBLOCK # Or STRINGBLOCK
-      directional:
-        type: LOG
+/nexoutils allblocks 
 ```
+Reads the allocations for all types of custom blocks currently in Nexo.
 
-Supported modes are LOG (clicked axis), BARREL (clicked face), FURNACE
-(horizontal facing towards the player), and DROPPER (also supports vertical
-facing). LOG uses `x`, `y`, `z`; the others use `north`, `south`, `east`, `west`,
-with `up`/`down` for BARREL and DROPPER.
+```
+/nexoutils noteblocks
+```
+Reads the allocations for noteblock custom blocks currently in Nexo.
 
-Each direction optionally accepts `<direction>_variation`, `<direction>_model`,
-or `<direction>_block`. For example, `east_model: example:block/east` uses that
-model without automatic rotation; `east_block: another_string_block` uses an
-existing item of the same block type. Otherwise the module allocates a state
-and rotates the parent's model automatically. Explicit variation numbers must
-be free and within Nexo's supported range. An unrotated direction can explicitly
-reuse the parent's variation if its model is unchanged.
+```
+/nexoutils chorusblocks
+```
+Reads the allocations for chorusblock custom blocks currently in Nexo.
 
-Generated states are registered through Nexo's external-item API. Their IDs
-and assigned variations are saved in
-`plugins/NexoUtilities/directional-variants.yml`; back up this file alongside
-Nexo's data. Source item configurations are not rewritten. Each generated
-direction consumes a real slot, visible in the allocation reports. A LOG can
-use three extra slots, FURNACE four, and BARREL/DROPPER six; reusing existing
-states reduces this. Insufficient capacity or conflicting assignments skip the
-affected directional definition and log the reason. Saved variants cannot be
-renumbered by editing `<direction>_variation`.
+```
+/nexoutils stringblocks
+```
+Reads the allocations for stringblock custom blocks currently in Nexo.
 
-The module preserves parent drop rules and returns the parent item through
-pick-block. It respects placement cancellation and leaves native note block
-directional handling to Nexo. Pick-block also resolves existing `_block` references
-to the base directional item. Creative mode can create that item; survival only
-selects or moves an existing base stack. A variant shared by multiple bases has
-no unique parent and keeps Nexo's normal pick-block behavior. Tall, stackable,
-and random-placement string blocks cannot currently be combined with this module.
-Automatic orientation applies to player placement; API/WorldEdit placement is
-not automatically rotated.
-Rotation is applied on the following server tick, after Nexo finishes placement.
-Cancelled placements, changed blocks, unloaded chunks and pending placements
-invalidated by a reload are left alone. A successful item reload logs the number
-of prepared directional chorus/string definitions.
-
-Disabling the module stops directional placement and new generation, while
-saved states remain registered for already placed blocks. Removing a definition
-also retains its generated states. These slots are not automatically reclaimed;
-do not delete the saved file or parent definitions while their blocks remain in
-worlds. Run `/nexo reload all` after changing item directional settings.
-
-Configuration follows Nexo's
-[directional mechanic](https://docs.nexomc.com/mechanics/custom-block-mechanics/noteblock-mechanic/directional-mechanic).
-
-Server smoke checks:
-
-- Run the three individual commands and `allblocks` in console and in-game;
-  compare the counts with registered variations and each other.
-- Reload Nexo after adding/removing a block; run again to check the updated count.
-- Check a directional block consumes its registered variant slots.
-- Check an ordinary player cannot run each report until granted its permission,
-  and granting one report does not unlock the others.
-- Check chorus/string reports gracefully handle disabled mechanics.
-- Grant only `nexoutils.command.allblocks`; verify the combined report works and
-  the individual reports remain permission-gated. Disable one mechanic and
-  check the combined command still reports the other two types.
-- With the module enabled, test all four directional modes for both types with
-  the rebuilt pack, including explicit models and variation assignments.
-- Check cancelled/protected placements consume no items and leave no blocks.
-- Check survival drops and creative pick-block return the parent item.
-- Check pick-block on existing `_block` references returns the base directional
-  item, including hidden wall-lamp variants. In survival, test with and without
-  the base item in the hotbar/storage; picking must never create a new stack.
-- Restart and reload Nexo; verify placed orientations and variation IDs persist.
-- Disable the module; check old blocks retain their models and ordinary placement
-  resumes. Test full registries and invalid configs log a useful error.
-
-References: [Nexo API](https://docs.nexomc.com/community-guides/api),
-[Paper command registration](https://docs.papermc.io/paper/dev/command-api/basics/registration/).
+If you encounter any bugs or would like to suggest new features feel free to add them in the issues tab of the github source! 
